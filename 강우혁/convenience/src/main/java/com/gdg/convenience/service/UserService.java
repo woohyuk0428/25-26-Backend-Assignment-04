@@ -26,8 +26,9 @@ public class UserService {
         User user = userRepository.save(User.builder()
                 .name(userSignUpDto.getName())
                 .email(userSignUpDto.getEmail())
+                .password(passwordEncoder.encode(userSignUpDto.getPassword()))
                 .phone(userSignUpDto.getPhone())
-                .role(Role.MANAGER)
+                .role(Role.ROLE_MANAGER)
                 .build()
         );
 
@@ -44,7 +45,7 @@ public class UserService {
                 .name(userSignUpDto.getName())
                 .email(userSignUpDto.getEmail())
                 .phone(userSignUpDto.getPhone())
-                .role(Role.STAFF)
+                .role(Role.ROLE_STAFF)
                 .build()
         );
 
@@ -59,8 +60,9 @@ public class UserService {
         User user = userRepository.save(User.builder()
                 .name(userSignUpDto.getName())
                 .email(userSignUpDto.getEmail())
+                .password(passwordEncoder.encode(userSignUpDto.getPassword()))
                 .phone(userSignUpDto.getPhone())
-                .role(Role.STAFF)
+                .role(Role.ROLE_STAFF)
                 .build()
         );
 

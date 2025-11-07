@@ -1,6 +1,7 @@
 package com.gdg.convenience.controller;
 
 import com.gdg.convenience.dto.TokenDto;
+import com.gdg.convenience.dto.UserInfoResponseDto;
 import com.gdg.convenience.dto.UserSignUpDto;
 import com.gdg.convenience.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,20 +14,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("auth")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/manager")
+    @PostMapping("manager")
     public ResponseEntity<TokenDto> managerSignUp(@RequestBody UserSignUpDto userSignUpDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.managerSignUp(userSignUpDto));
     }
 
-    @PostMapping("/staff")
+    @PostMapping("staff")
     public ResponseEntity<TokenDto> staffSignUp(@RequestBody UserSignUpDto userSignUpDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.staffSignUp(userSignUpDto));
+    }
+    @GetMapping
+    public ResponseEntity<UserInfoResponseDto> getUserInfo(Principal principal) {
+        return ResponseEntity.ok(userService.findUserByPrincipal(principal));
     }
 }

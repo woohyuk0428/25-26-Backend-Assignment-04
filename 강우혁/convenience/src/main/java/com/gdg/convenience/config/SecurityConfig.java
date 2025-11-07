@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final TokenProvider tokenprovider;
+    private final TokenProvider tokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -30,12 +30,12 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/auth/signUp/**", "/user/login").permitAll()
-                        .requestMatchers("/auth/manager/**", "/manager/**").hasAuthority("MANAGER")
-                        .requestMatchers("/auth/staff/**", "/staff/**").hasAnyAuthority("STAFF", "MANAGER")
+                        .requestMatchers("/auth/manager", "/auth/staff", "/user/login").permitAll()
+                        .requestMatchers("/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/staff/**").hasAnyRole("STAFF", "MANAGER")
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtFilter(tokenprovider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

@@ -33,8 +33,8 @@ public class TokenProvider {
     private final long refreshTokenValidityTime;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey,
-                         @Value("${jwt.access-token-validity-in-milliseconds") long accessTokenValidityTime,
-                         @Value("${jwt.refresh-token-validity-in-milliseconds") long refreshTokenValidityTime){
+                         @Value("${jwt.access-token-validity-in-milliseconds}") long accessTokenValidityTime,
+                         @Value("${jwt.refresh-token-validity-in-milliseconds}") long refreshTokenValidityTime){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenValidityTime = accessTokenValidityTime;
@@ -56,7 +56,7 @@ public class TokenProvider {
         }
         List<SimpleGrantedAuthority> authorities =
                 Arrays.stream(claims.get(ROLE_CLAIM).toString().split(","))
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                        .map(SimpleGrantedAuthority::new)
                         .toList();
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
         authentication.setDetails(claims);

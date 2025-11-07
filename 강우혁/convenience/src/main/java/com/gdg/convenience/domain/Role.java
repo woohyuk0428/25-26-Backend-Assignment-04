@@ -1,6 +1,6 @@
 package com.gdg.convenience.domain;
 
 public enum Role {
-    MANAGER,
-    STAFF
+    ROLE_MANAGER,
+    ROLE_STAFF
 }
