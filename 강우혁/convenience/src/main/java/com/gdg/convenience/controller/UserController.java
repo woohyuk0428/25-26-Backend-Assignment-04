@@ -34,7 +34,7 @@ public class UserController {
     public ResponseEntity<TokenDto> staffSignUp(@RequestBody UserSignUpDto userSignUpDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.staffSignUp(userSignUpDto));
     }
-    @GetMapping("/user")
+    @GetMapping("/info")
     public ResponseEntity<UserInfoResponseDto> getMyInfo(Principal principal) {
         return ResponseEntity.ok(userService.getMyInfo(principal));
     }
