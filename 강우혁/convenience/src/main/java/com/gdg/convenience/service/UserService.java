@@ -69,6 +69,7 @@ public class UserService {
                 .build();
     }
 
+
     @Transactional(readOnly = true)
     public UserInfoResponseDto getMyInfo (Principal principal){
        User user = getUserEntity(Long.parseLong(principal.getName()));

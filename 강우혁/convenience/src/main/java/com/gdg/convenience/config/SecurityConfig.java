@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/auth/manager", "/auth/staff", "/user/login").permitAll()
+                        .requestMatchers("/auth/manager", "/auth/staff", "/user/login","/auth/refresh/**").permitAll()
                         .requestMatchers("/manager/**").hasRole("MANAGER")
                         .requestMatchers("/staff/**").hasAnyRole("STAFF", "MANAGER")
                         .anyRequest().authenticated()

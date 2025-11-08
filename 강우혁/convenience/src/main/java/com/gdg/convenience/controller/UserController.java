@@ -55,11 +55,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<TokenDto> refreshManagerToken(@RequestBody Long id) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.refresh(id));
+    @PostMapping("/refresh/{id}")
+    public ResponseEntity<TokenDto> refresh(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.refresh(id));
     }
-
-
-
 }
