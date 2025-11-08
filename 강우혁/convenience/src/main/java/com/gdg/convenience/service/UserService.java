@@ -44,6 +44,7 @@ public class UserService {
         User user = userRepository.save(User.builder()
                 .name(userSignUpDto.getName())
                 .email(userSignUpDto.getEmail())
+                .password(passwordEncoder.encode(userSignUpDto.getPassword()))
                 .phone(userSignUpDto.getPhone())
                 .role(Role.ROLE_STAFF)
                 .build()
@@ -56,35 +57,52 @@ public class UserService {
                 .build();
     }
 
-    public TokenDto refreshToken(UserSignUpDto userSignUpDto) {
-        User user = userRepository.save(User.builder()
-                .name(userSignUpDto.getName())
-                .email(userSignUpDto.getEmail())
-                .password(passwordEncoder.encode(userSignUpDto.getPassword()))
-                .phone(userSignUpDto.getPhone())
-                .role(Role.ROLE_STAFF)
-                .build()
-        );
+    @Transactional
+    public TokenDto refresh(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         String refreshToken = tokenProvider.createRefreshToken(user);
 
-        return  TokenDto.builder()
+        return TokenDto.builder()
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    public UserInfoResponseDto findUserByPrincipal (Principal principal){
-        Long userId = Long.parseLong(principal.getName());
+    @Transactional(readOnly = true)
+    public UserInfoResponseDto getMyInfo (Principal principal){
+       User user = getUserEntity(Long.parseLong(principal.getName()));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return UserInfoResponseDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .phone(user.getPhone())
-                .build();
+       return UserInfoResponseDto.from(user);
     }
 
+    @Transactional(readOnly = true)
+    public UserInfoResponseDto getUserInfo(Long id){
+        User user = getUserEntity(id);
+
+        return UserInfoResponseDto.from(user);
+    }
+
+    @Transactional
+    public UserInfoResponseDto updateUserInfo(Principal principal, UserSignUpDto userSignUpDto){
+        User user = getUserEntity(Long.parseLong(principal.getName()));
+        user.updateInfo(
+                userSignUpDto.getName() == null ? user.getName() : userSignUpDto.getName(),
+                userSignUpDto.getEmail() == null ? user.getEmail() : userSignUpDto.getEmail(),
+                userSignUpDto.getPassword() == null ? user.getPassword() : passwordEncoder.encode(userSignUpDto.getPassword())
+        );
+
+        return UserInfoResponseDto.from(user);
+    }
+
+    @Transactional
+    public void deleteUser(Principal principal){
+        userRepository.deleteById(Long.parseLong(principal.getName()));
+    }
+
+
+    public User getUserEntity(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("user not found"));
+    }
 }

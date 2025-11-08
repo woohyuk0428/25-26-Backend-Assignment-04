@@ -31,7 +31,7 @@ public class User {
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "USER_ROLE", nullable = false, unique = true)
+    @Column(name = "USER_ROLE", nullable = false)
     private Role role;
 
 
@@ -44,4 +44,15 @@ public class User {
         this.phone = phone;
         this.role = role;
     }
+
+    public void update(Role role){
+        this.role = role;
+    }
+
+    public void updateInfo(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
 }
