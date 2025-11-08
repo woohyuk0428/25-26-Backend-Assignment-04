@@ -49,7 +49,7 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUserInfo(principal, userSignUpDto));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     public ResponseEntity<UserInfoResponseDto> deleteUserInfo(Principal principal) {
         userService.deleteUser(principal);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

@@ -16,7 +16,7 @@ public class WorkLogController {
 
     @PostMapping("/check-in")
     public String checkIn(@RequestHeader("Authorization") String token) {
-        return workLogService.checkIn(token.substring(7)); // "Bearer " 제거
+        return workLogService.checkIn(token.substring(7));
     }
 
     @PostMapping("/check-out")
