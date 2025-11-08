@@ -5,26 +5,26 @@ import com.gdg.convenience.domain.WorkLog;
 import com.gdg.convenience.jwt.TokenProvider;
 import com.gdg.convenience.repository.UserRepository;
 import com.gdg.convenience.repository.WorkLogRepository;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class WorkLogService {
 
-    private WorkLogRepository workLogRepository;
-    private UserRepository userRepository;
-    private TokenProvider tokenProvider;
+    private final WorkLogRepository workLogRepository;
+    private final UserRepository userRepository;
+    private final TokenProvider tokenProvider;
 
-    public String checkIn(String token) {
-        Long userId = tokenProvider.getUserId(token);
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new RuntimeException("사용자가 없습니다.")
-        );
+    public String checkIn(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자가 없습니다."));
 
-        if (workLogRepository.findTopByUserIdOrderByIdDesc(user.getId()).isPresent()) {
+        Optional<WorkLog> lastWorkLog = workLogRepository.findTopByUserIdOrderByIdDesc(user.getId());
+        if (lastWorkLog.isPresent() && lastWorkLog.get().getCheckOutTime() == null) {
             return "이미 출근 처리된 상태입니다.";
         }
 
@@ -34,27 +34,22 @@ public class WorkLogService {
                 .build();
 
         workLogRepository.save(workLog);
-
         return "출근처리가 완료되었습니다.";
     }
 
-    public String checkOut(String token) {
-        Long userId = tokenProvider.getUserId(token);
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new RuntimeException("사용자가 없습니다.")
-        );
+    public String checkOut(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자가 없습니다."));
 
-        if (workLogRepository.findTopByUserIdOrderByIdDesc(user.getId()).isPresent()) {
+        WorkLog lastWorkLog = workLogRepository.findTopByUserIdOrderByIdDesc(user.getId())
+                .orElseThrow(() -> new RuntimeException("출근 기록이 없습니다."));
+
+        if (lastWorkLog.getCheckOutTime() != null) {
             return "이미 퇴근 처리된 상태입니다.";
         }
 
-        WorkLog workLog = WorkLog.builder()
-                .user(user)
-                .checkOutTime(LocalDateTime.now())
-                .build();
-
-        workLogRepository.save(workLog);
-
-        return "퇴근처리가 왼료되었습니다.";
+        lastWorkLog.setCheckOutTime(LocalDateTime.now());
+        workLogRepository.save(lastWorkLog);
+        return "퇴근 처리가 완료되었습니다.";
     }
 }

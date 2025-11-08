@@ -7,20 +7,24 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/work")
+@RequestMapping("/workLog")
 public class WorkLogController {
 
     private final WorkLogService workLogService;
 
     @PostMapping("/check-in")
-    public String checkIn(@RequestHeader("Authorization") String token) {
-        return workLogService.checkIn(token.substring(7));
+    public String checkIn(Principal principal) {
+        Long userId = Long.parseLong(principal.getName());
+        return workLogService.checkIn(userId);
     }
 
     @PostMapping("/check-out")
-    public String checkOut(@RequestHeader("Authorization") String token) {
-        return workLogService.checkOut(token.substring(7));
+    public String checkOut(Principal principal) {
+        Long userId = Long.parseLong(principal.getName());
+        return workLogService.checkOut(userId);
     }
 }

@@ -34,19 +34,29 @@ public class User {
     @Column(name = "USER_ROLE", nullable = false)
     private Role role;
 
+    @Column(name = "ACCESS_TOKEN")
+    private String accessToken;
 
+    @Column(name = "REFRESH_TOKEN")
+    private String refreshToken;
 
     @Builder
-    public User(String name, String email, String password, String phone, Role role) {
+    public User(String name, String email, String password, String phone, Role role, String accessToken, String refreshToken) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
         this.role = role;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
-    public void update(Role role){
-        this.role = role;
+    public void saveAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public void saveRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public void updateInfo(String name, String email, String password) {

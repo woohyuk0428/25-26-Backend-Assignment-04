@@ -34,6 +34,8 @@ public class UserService {
 
         String accessToken = tokenProvider.createAccessToken(user);
 
+        user.saveAccessToken(accessToken);
+
         return TokenDto.builder()
                 .accessToken(accessToken)
                 .build();
@@ -52,6 +54,8 @@ public class UserService {
 
         String accessToken = tokenProvider.createAccessToken(user);
 
+        user.saveAccessToken(accessToken);
+
         return  TokenDto.builder()
                 .accessToken(accessToken)
                 .build();
@@ -64,7 +68,11 @@ public class UserService {
 
         String refreshToken = tokenProvider.createRefreshToken(user);
 
+        user.saveRefreshToken(refreshToken);
+        userRepository.save(user);
+
         return TokenDto.builder()
+                .accessToken(user.getAccessToken())
                 .refreshToken(refreshToken)
                 .build();
     }

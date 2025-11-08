@@ -32,7 +32,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/auth/manager", "/auth/staff", "/user/login","/auth/refresh/**").permitAll()
                         .requestMatchers("/manager/**").hasRole("MANAGER")
-                        .requestMatchers("/staff/**").hasAnyRole("STAFF", "MANAGER")
+                        .requestMatchers("/work/**").hasRole("MANAGER")
+                        .requestMatchers("/workLog/check-in", "/workLog/check-out").authenticated()
+                        .requestMatchers("/staff/**").hasAnyRole("STAFF")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
