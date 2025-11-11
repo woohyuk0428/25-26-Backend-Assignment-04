@@ -4,6 +4,8 @@ import com.gdg.convenience.domain.User;
 import com.gdg.convenience.domain.Work;
 import com.gdg.convenience.dto.CreateWorkRequestDto;
 import com.gdg.convenience.dto.WorkDto;
+import com.gdg.convenience.global.EntityFinder;
+import com.gdg.convenience.global.WorkNotFoundException;
 import com.gdg.convenience.repository.UserRepository;
 import com.gdg.convenience.repository.WorkRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +20,11 @@ public class WorkService {
 
     private final WorkRepository workRepository;
     private final UserRepository userRepository;
+    private final EntityFinder entityFinder;
 
     @Transactional
     public WorkDto createWork(CreateWorkRequestDto createWorkRequestDto) {
-        User user = userRepository.findById(createWorkRequestDto.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = entityFinder.checkUser(createWorkRequestDto.getId());
 
         Work work = Work.builder()
                 .user(user)
@@ -44,15 +46,13 @@ public class WorkService {
 
     @Transactional(readOnly = true)
     public WorkDto getWork(Long id) {
-        Work work = workRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Work not found"));
+        Work work = entityFinder.checkWork(id);
         return WorkDto.from(work);
     }
 
     @Transactional
     public WorkDto updateWork(Long id, CreateWorkRequestDto createWorkRequestDto) {
-        Work work = workRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Work not found"));
+        Work work = entityFinder.checkWork(id);
 
         work.update(createWorkRequestDto.getScheduledStart(), createWorkRequestDto.getScheduledEnd());
         return WorkDto.from(work);
@@ -62,4 +62,5 @@ public class WorkService {
     public void deleteWork(Long id) {
         workRepository.deleteById(id);
     }
+
 }

@@ -5,6 +5,8 @@ import com.gdg.convenience.domain.User;
 import com.gdg.convenience.dto.TokenDto;
 import com.gdg.convenience.dto.UserInfoResponseDto;
 import com.gdg.convenience.dto.UserSignUpDto;
+import com.gdg.convenience.global.EntityFinder;
+import com.gdg.convenience.global.UserNotFoundException;
 import com.gdg.convenience.jwt.TokenProvider;
 import com.gdg.convenience.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final EntityFinder entityFinder;
 
     @Transactional
     public TokenDto managerSignUp(UserSignUpDto userSignUpDto) {
@@ -63,8 +66,7 @@ public class UserService {
 
     @Transactional
     public TokenDto refresh(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = entityFinder.checkUser(id);
 
         String refreshToken = tokenProvider.createRefreshToken(user);
 
@@ -80,21 +82,21 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getMyInfo (Principal principal){
-       User user = getUserEntity(Long.parseLong(principal.getName()));
+       User user = entityFinder.checkUser(Long.parseLong(principal.getName()));
 
        return UserInfoResponseDto.from(user);
     }
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long id){
-        User user = getUserEntity(id);
+        User user = entityFinder.checkUser(id);
 
         return UserInfoResponseDto.from(user);
     }
 
     @Transactional
     public UserInfoResponseDto updateUserInfo(Principal principal, UserSignUpDto userSignUpDto){
-        User user = getUserEntity(Long.parseLong(principal.getName()));
+        User user = entityFinder.checkUser(Long.parseLong(principal.getName()));
         user.updateInfo(
                 userSignUpDto.getName() == null ? user.getName() : userSignUpDto.getName(),
                 userSignUpDto.getEmail() == null ? user.getEmail() : userSignUpDto.getEmail(),
@@ -107,11 +109,5 @@ public class UserService {
     @Transactional
     public void deleteUser(Principal principal){
         userRepository.deleteById(Long.parseLong(principal.getName()));
-    }
-
-
-    public User getUserEntity(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("user not found"));
     }
 }
