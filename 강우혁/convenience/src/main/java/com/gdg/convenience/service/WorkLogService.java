@@ -53,9 +53,4 @@ public class WorkLogService {
         workLogRepository.save(lastWorkLog);
         return "퇴근 처리가 완료되었습니다.";
     }
-
-    private User checkUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("사용자가 없습니다."));
-    }
 }
