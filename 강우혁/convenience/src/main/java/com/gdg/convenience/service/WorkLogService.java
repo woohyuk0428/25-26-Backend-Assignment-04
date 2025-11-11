@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 public class WorkLogService {
 
     private final WorkLogRepository workLogRepository;
-    private final UserRepository userRepository;
     private final EntityFinder entityFinder;
 
     public String checkIn(Long userId) {
